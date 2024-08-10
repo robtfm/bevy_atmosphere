@@ -336,7 +336,9 @@ fn prepare_atmosphere_resources(
             name = "bevy_atmosphere::pipeline::prepare_atmosphere_assets"
         )
         .entered();
-        let texture = &gpu_images.get(&atmosphere_image.handle).unwrap().texture;
+        let Some(texture) = gpu_images.get(&atmosphere_image.handle).map(|h|& h.texture) else {
+            return;
+        };
         let view = texture.create_view(&ATMOSPHERE_ARRAY_TEXTURE_VIEW_DESCRIPTOR);
         atmosphere_image.array_view = Some(view);
         update();
@@ -365,7 +367,9 @@ fn prepare_atmosphere_bind_group(
     image_bind_group_layout: Res<AtmosphereImageBindGroupLayout>,
     atmosphere: Option<Res<AtmosphereModel>>,
 ) {
-    let view = atmosphere_image.array_view.as_ref().expect("prepare_changed_settings should have took care of making AtmosphereImage.array_value Some(TextureView)");
+    let Some(view) = atmosphere_image.array_view.as_ref() else {
+        return;
+    };
 
     let atmosphere = match atmosphere {
         Some(a) => a.clone(),
@@ -486,7 +490,9 @@ impl render_graph::Node for AtmosphereNode {
             AtmosphereState::Update => {
                 if !update_events.is_empty() {
                     // only run when there are update events available
-                    let bind_groups = world.resource::<AtmosphereBindGroups>();
+                    let Some(bind_groups) = world.get_resource::<AtmosphereBindGroups>() else {
+                        return Ok(());
+                    };
                     let pipeline_cache = world.resource::<PipelineCache>();
                     let cached_metadata = world.resource::<CachedAtmosphereModelMetadata>();
                     let settings = world.resource::<AtmosphereSettings>();
