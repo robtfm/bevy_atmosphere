@@ -336,7 +336,7 @@ fn prepare_atmosphere_resources(
             name = "bevy_atmosphere::pipeline::prepare_atmosphere_assets"
         )
         .entered();
-        let Some(texture) = gpu_images.get(&atmosphere_image.handle).map(|h|& h.texture) else {
+        let Some(texture) = gpu_images.get(&atmosphere_image.handle).map(|h| &h.texture) else {
             return;
         };
         let view = texture.create_view(&ATMOSPHERE_ARRAY_TEXTURE_VIEW_DESCRIPTOR);
@@ -515,8 +515,8 @@ impl render_graph::Node for AtmosphereNode {
                     let update_pipeline = pipeline_cache.get_compute_pipeline(pipeline).unwrap();
                     pass.set_pipeline(update_pipeline);
                     pass.dispatch_workgroups(
-                        settings.resolution / WORKGROUP_SIZE,
-                        settings.resolution / WORKGROUP_SIZE,
+                        settings.resolution / WORKGROUP_SIZE / 4,
+                        settings.resolution / WORKGROUP_SIZE / 4,
                         6,
                     );
                 }
