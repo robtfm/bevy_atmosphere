@@ -514,8 +514,8 @@ impl render_graph::Node for AtmosphereNode {
                     let update_pipeline = pipeline_cache.get_compute_pipeline(pipeline).unwrap();
                     pass.set_pipeline(update_pipeline);
                     pass.dispatch_workgroups(
-                        settings.resolution / WORKGROUP_SIZE,
-                        settings.resolution / WORKGROUP_SIZE,
+                        settings.resolution / WORKGROUP_SIZE / 8,
+                        settings.resolution / WORKGROUP_SIZE / 8,
                         6,
                     );
                 }
